@@ -2,6 +2,7 @@ package org.datanucleus.test;
 
 import org.junit.*;
 import javax.persistence.*;
+import java.util.Date;
 
 import static org.junit.Assert.*;
 import mydomain.model.*;
@@ -16,28 +17,18 @@ public class SimpleTest
         EntityManagerFactory emf = Persistence.createEntityManagerFactory("MyTest");
 
         EntityManager em = emf.createEntityManager();
-        EntityTransaction tx = em.getTransaction();
-        try
-        {
-            tx.begin();
+		em = emf.createEntityManager();
 
-            // [INSERT code here to persist object required for testing]
-            tx.commit();
-        }
-        catch (Throwable thr)
-        {
-            NucleusLogger.GENERAL.error(">> Exception thrown persisting data", thr);
-            fail("Failed to persist data : " + thr.getMessage());
-        }
-        finally 
-        {
-            if (tx.isActive())
-            {
-                tx.rollback();
-            }
-            em.close();
-        }
-
+		Date date1 = new Date();
+		Date date2 = new Date();
+		
+		em.createQuery("Select x From Person x Where x.date1 = :date1 And x.date2 = :date2", Person.class) //
+			.setParameter("date1", date1) //
+			.setParameter("date2", date2) //
+			.getResultList();
+		
+		em.close();
+		
         emf.close();
         NucleusLogger.GENERAL.info(">> test END");
     }
